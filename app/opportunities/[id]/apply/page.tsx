@@ -1,6 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ApplyForm } from "@/components/opportunities/ApplyForm";
+import { normalizeOne } from "@/lib/utils";
 
 export default async function ApplyPage({
   params,
@@ -31,11 +32,7 @@ export default async function ApplyPage({
 
   if (!opportunity) notFound();
 
-  const production = opportunity.productions as {
-    title: string;
-    slug: string;
-    user_id: string;
-  } | null;
+  const production = normalizeOne(opportunity.productions);
 
   if (!production) notFound();
 

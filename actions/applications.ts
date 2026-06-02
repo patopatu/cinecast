@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { normalizeOne } from "@/lib/utils";
 
 export async function submitApplication(formData: FormData) {
   const supabase = await createClient();
@@ -33,10 +34,7 @@ export async function submitApplication(formData: FormData) {
     .eq("id", opportunityId)
     .single();
 
-  const production = opportunity?.productions as
-    | { slug: string; user_id: string }
-    | null
-    | undefined;
+  const production = normalizeOne(opportunity?.productions);
 
   if (!opportunity || opportunity.status !== "open") {
     throw new Error("Esta chamada não está aberta.");
@@ -71,5 +69,8 @@ export async function submitApplication(formData: FormData) {
     throw new Error(error.message);
   }
 
-  redirect(`/productions/${productionSlug}?applied=1`);
+  const slug = production?.slug || productionSlug;
+  if (!slug) redirect("/");
+
+  redirect(`/productions/${slug}?applied=1`);
 }
