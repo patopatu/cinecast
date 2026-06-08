@@ -2,19 +2,12 @@
 
 import { useState } from "react";
 import { createOpportunity } from "@/actions/opportunities";
+import { opportunityForm as opportunityFormCopy } from "@/lib/copy";
 
 type OpportunityFormProps = {
   productionId: string;
   productionSlug: string;
 };
-
-const opportunityTypes = [
-  { value: "cast", label: "Elenco" },
-  { value: "crew", label: "Equipe técnica" },
-  { value: "extra", label: "Extra" },
-  { value: "internship", label: "Estágio" },
-  { value: "volunteer", label: "Voluntário" },
-];
 
 const inputClass =
   "w-full rounded-lg border border-background bg-background px-3 py-2 text-foreground outline-none focus:border-primary";
@@ -27,6 +20,14 @@ export function OpportunityForm({
   const showCast = type === "cast" || type === "extra";
   const showCrew = !showCast;
 
+  const opportunityTypes = [
+    { value: "cast", label: "Elenco" },
+    { value: "crew", label: "Equipe técnica" },
+    { value: "extra", label: "Extra" },
+    { value: "internship", label: "Estágio" },
+    { value: "volunteer", label: "Voluntário" },
+  ];
+
   return (
     <form
       action={createOpportunity}
@@ -37,13 +38,13 @@ export function OpportunityForm({
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="title">
-          Título da chamada *
+          {opportunityFormCopy.title.label}
         </label>
         <input
           id="title"
           name="title"
           required
-          placeholder="Ex.: Atriz 25–35 anos"
+          placeholder={opportunityFormCopy.title.placeholder}
           className={inputClass}
         />
       </div>
@@ -51,7 +52,7 @@ export function OpportunityForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm text-muted" htmlFor="type">
-            Tipo *
+            {opportunityFormCopy.type}
           </label>
           <select
             id="type"
@@ -70,18 +71,23 @@ export function OpportunityForm({
 
         <div>
           <label className="mb-1 block text-sm text-muted" htmlFor="status">
-            Status
+            {opportunityFormCopy.status}
           </label>
-          <select id="status" name="status" defaultValue="open" className={inputClass}>
-            <option value="open">Aberta</option>
-            <option value="draft">Rascunho</option>
+          <select
+            id="status"
+            name="status"
+            defaultValue="open"
+            className={inputClass}
+          >
+            <option value="open">{opportunityFormCopy.statusOpen}</option>
+            <option value="draft">{opportunityFormCopy.statusDraft}</option>
           </select>
         </div>
       </div>
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="description">
-          Descrição
+          {opportunityFormCopy.description}
         </label>
         <textarea
           id="description"
@@ -93,7 +99,7 @@ export function OpportunityForm({
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="requirements">
-          Requisitos
+          {opportunityFormCopy.requirements}
         </label>
         <textarea
           id="requirements"
@@ -105,16 +111,21 @@ export function OpportunityForm({
 
       <label className="flex items-center gap-2 text-sm text-muted">
         <input type="checkbox" name="is_paid" className="rounded" />
-        Vaga remunerada
+        {opportunityFormCopy.paid}
       </label>
 
       {showCast && (
         <div className="space-y-4 rounded-xl border border-background p-4">
-          <h3 className="font-semibold text-foreground">Detalhes — Elenco</h3>
+          <h3 className="font-display text-foreground">
+            {opportunityFormCopy.cast.section}
+          </h3>
 
           <div>
-            <label className="mb-1 block text-sm text-muted" htmlFor="character_name">
-              Nome da personagem *
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="character_name"
+            >
+              {opportunityFormCopy.cast.characterName}
             </label>
             <input
               id="character_name"
@@ -126,33 +137,55 @@ export function OpportunityForm({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm text-muted" htmlFor="age_range">
-                Faixa etária
+              <label
+                className="mb-1 block text-sm text-muted"
+                htmlFor="age_range"
+              >
+                {opportunityFormCopy.cast.ageRange}
               </label>
               <input
                 id="age_range"
                 name="age_range"
-                placeholder="Ex.: 25–35"
+                placeholder={opportunityFormCopy.cast.ageRangePlaceholder}
                 className={inputClass}
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm text-muted" htmlFor="gender">
-                Gênero
+              <label
+                className="mb-1 block text-sm text-muted"
+                htmlFor="gender"
+              >
+                {opportunityFormCopy.cast.gender}
               </label>
-              <select id="gender" name="gender" defaultValue="any" className={inputClass}>
-                <option value="any">Qualquer</option>
-                <option value="female">Feminino</option>
-                <option value="male">Masculino</option>
-                <option value="non_binary">Não binário</option>
-                <option value="not_specified">Não especificado</option>
+              <select
+                id="gender"
+                name="gender"
+                defaultValue="any"
+                className={inputClass}
+              >
+                <option value="any">{opportunityFormCopy.cast.genderAny}</option>
+                <option value="female">
+                  {opportunityFormCopy.cast.genderFemale}
+                </option>
+                <option value="male">
+                  {opportunityFormCopy.cast.genderMale}
+                </option>
+                <option value="non_binary">
+                  {opportunityFormCopy.cast.genderNonBinary}
+                </option>
+                <option value="not_specified">
+                  {opportunityFormCopy.cast.genderNotSpecified}
+                </option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="mb-1 block text-sm text-muted" htmlFor="personality">
-              Personalidade
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="personality"
+            >
+              {opportunityFormCopy.cast.personality}
             </label>
             <textarea
               id="personality"
@@ -163,8 +196,11 @@ export function OpportunityForm({
           </div>
 
           <div>
-            <label className="mb-1 block text-sm text-muted" htmlFor="observations">
-              Observações
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="observations"
+            >
+              {opportunityFormCopy.cast.observations}
             </label>
             <textarea
               id="observations"
@@ -178,17 +214,22 @@ export function OpportunityForm({
 
       {showCrew && (
         <div className="space-y-4 rounded-xl border border-background p-4">
-          <h3 className="font-semibold text-foreground">Detalhes — Equipe</h3>
+          <h3 className="font-display text-foreground">
+            {opportunityFormCopy.crew.section}
+          </h3>
 
           <div>
-            <label className="mb-1 block text-sm text-muted" htmlFor="position">
-              Cargo *
+            <label
+              className="mb-1 block text-sm text-muted"
+              htmlFor="position"
+            >
+              {opportunityFormCopy.crew.position}
             </label>
             <input
               id="position"
               name="position"
               required={showCrew}
-              placeholder="Ex.: Diretor de fotografia"
+              placeholder={opportunityFormCopy.crew.positionPlaceholder}
               className={inputClass}
             />
           </div>
@@ -198,7 +239,7 @@ export function OpportunityForm({
               className="mb-1 block text-sm text-muted"
               htmlFor="experience_level"
             >
-              Experiência necessária
+              {opportunityFormCopy.crew.experience}
             </label>
             <select
               id="experience_level"
@@ -206,10 +247,18 @@ export function OpportunityForm({
               defaultValue="intermediate"
               className={inputClass}
             >
-              <option value="beginner">Iniciante</option>
-              <option value="intermediate">Intermediário</option>
-              <option value="advanced">Avançado</option>
-              <option value="professional">Profissional</option>
+              <option value="beginner">
+                {opportunityFormCopy.crew.experienceBeginner}
+              </option>
+              <option value="intermediate">
+                {opportunityFormCopy.crew.experienceIntermediate}
+              </option>
+              <option value="advanced">
+                {opportunityFormCopy.crew.experienceAdvanced}
+              </option>
+              <option value="professional">
+                {opportunityFormCopy.crew.experienceProfessional}
+              </option>
             </select>
           </div>
 
@@ -218,7 +267,7 @@ export function OpportunityForm({
               className="mb-1 block text-sm text-muted"
               htmlFor="crew_observations"
             >
-              Observações
+              {opportunityFormCopy.crew.observations}
             </label>
             <textarea
               id="crew_observations"
@@ -234,7 +283,7 @@ export function OpportunityForm({
         type="submit"
         className="w-full rounded-lg bg-primary py-2 font-medium text-white transition-colors hover:bg-primary-hover"
       >
-        Publicar chamada
+        {opportunityFormCopy.submit}
       </button>
     </form>
   );

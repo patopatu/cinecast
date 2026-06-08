@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { auth as authCopy } from "@/lib/copy";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -37,9 +38,7 @@ export function RegisterForm() {
     }
 
     if (data.user && !data.session) {
-      setMessage(
-        "Conta criada! Verifique seu e-mail e clique no link para ativar."
-      );
+      setMessage(authCopy.register.emailSent);
       return;
     }
 
@@ -52,10 +51,10 @@ export function RegisterForm() {
       onSubmit={handleSubmit}
       className="mx-auto w-full max-w-md space-y-4 rounded-2xl border border-card bg-card p-8"
     >
-      <h1 className="text-2xl font-bold text-foreground">Criar conta</h1>
-      <p className="text-sm text-muted">
-        Cadastre-se para publicar projetos ou se candidatar.
-      </p>
+      <h1 className="text-h2 text-2xl text-foreground">
+        {authCopy.register.title}
+      </h1>
+      <p className="text-sm text-muted">{authCopy.register.subtitle}</p>
 
       {error && (
         <p className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
@@ -71,7 +70,7 @@ export function RegisterForm() {
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="fullName">
-          Nome completo
+          {authCopy.register.fullName}
         </label>
         <input
           id="fullName"
@@ -86,7 +85,7 @@ export function RegisterForm() {
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="email">
-          E-mail
+          {authCopy.register.email}
         </label>
         <input
           id="email"
@@ -101,7 +100,7 @@ export function RegisterForm() {
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="password">
-          Senha
+          {authCopy.register.password}
         </label>
         <input
           id="password"
@@ -113,7 +112,9 @@ export function RegisterForm() {
           onChange={(e) => setPassword(e.target.value)}
           className="w-full rounded-lg border border-background bg-background px-3 py-2 text-foreground outline-none focus:border-primary"
         />
-        <p className="mt-1 text-xs text-muted">Mínimo de 6 caracteres.</p>
+        <p className="mt-1 text-xs text-muted">
+          {authCopy.register.passwordHint}
+        </p>
       </div>
 
       <button
@@ -121,13 +122,16 @@ export function RegisterForm() {
         disabled={loading}
         className="w-full rounded-lg bg-primary py-2 font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
       >
-        {loading ? "Criando..." : "Criar conta"}
+        {loading ? authCopy.register.submitting : authCopy.register.submit}
       </button>
 
       <p className="text-center text-sm text-muted">
-        Já tem conta?{" "}
-        <Link href="/login" className="text-primary hover:text-primary-hover">
-          Entrar
+        {authCopy.register.haveAccount}{" "}
+        <Link
+          href="/login"
+          className="text-primary hover:text-primary-hover"
+        >
+          {authCopy.register.signIn}
         </Link>
       </p>
     </form>

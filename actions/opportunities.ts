@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { errors as errorsCopy } from "@/lib/copy";
 
 type OpportunityType =
   | "cast"
@@ -32,7 +33,7 @@ export async function createOpportunity(formData: FormData) {
   const status = String(formData.get("status") ?? "open");
 
   if (!productionId || !productionSlug || !title) {
-    throw new Error("Preencha os campos obrigatórios.");
+    throw new Error(errorsCopy.requiredFields);
   }
 
   const { data: production } = await supabase
@@ -42,7 +43,7 @@ export async function createOpportunity(formData: FormData) {
     .single();
 
   if (!production || production.user_id !== user.id) {
-    throw new Error("Você não pode criar chamadas nesta produção.");
+    throw new Error(errorsCopy.cannotCreateCall);
   }
 
   const { data: opportunity, error: oppError } = await supabase
@@ -66,7 +67,7 @@ export async function createOpportunity(formData: FormData) {
   if (isCastType(type)) {
     const characterName = String(formData.get("character_name") ?? "").trim();
     if (!characterName) {
-      throw new Error("Nome da personagem é obrigatório para elenco/extra.");
+      throw new Error(errorsCopy.characterRequired);
     }
 
     const { error: castError } = await supabase.from("cast_roles").insert({
@@ -82,7 +83,7 @@ export async function createOpportunity(formData: FormData) {
   } else {
     const position = String(formData.get("position") ?? "").trim();
     if (!position) {
-      throw new Error("Cargo é obrigatório para equipe/estágio/voluntário.");
+      throw new Error(errorsCopy.positionRequired);
     }
 
     const { error: crewError } = await supabase.from("crew_roles").insert({

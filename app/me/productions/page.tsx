@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { myProductions as myProductionsCopy } from "@/lib/copy";
 
 const projectTypeLabels: Record<string, string> = {
   film: "Filme",
@@ -35,29 +36,30 @@ export default async function MyProductionsPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
+    <div className="mx-auto max-w-6xl px-4 py-12 md:py-20">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            Minhas produções
+          <h1 className="text-h1 text-3xl text-foreground sm:text-4xl">
+            {myProductionsCopy.title}
           </h1>
-          <p className="mt-2 text-muted">
-            Gerencie seus projetos e chamadas.
-          </p>
+          <p className="mt-2 text-muted">{myProductionsCopy.subtitle}</p>
         </div>
         <Link
           href="/productions/new"
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+          className="btn-primary"
         >
-          Nova produção
+          {myProductionsCopy.newProduction}
         </Link>
       </div>
 
       {!productions?.length && (
         <p className="rounded-2xl border border-dashed border-card p-10 text-center text-muted">
-          Você ainda não criou nenhuma produção.{" "}
-          <Link href="/productions/new" className="text-primary hover:text-primary-hover">
-            Criar a primeira
+          {myProductionsCopy.empty}{" "}
+          <Link
+            href="/productions/new"
+            className="text-primary hover:text-primary-hover"
+          >
+            {myProductionsCopy.emptyCta}
           </Link>
         </p>
       )}
@@ -68,7 +70,7 @@ export default async function MyProductionsPage() {
             key={production.id}
             className="rounded-2xl border border-card bg-card p-5"
           >
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-lg font-display text-foreground">
               {production.title}
             </h2>
             <p className="mt-1 text-sm text-muted">
@@ -85,19 +87,19 @@ export default async function MyProductionsPage() {
                 href={`/productions/${production.slug}`}
                 className="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-hover"
               >
-                Ver página
+                {myProductionsCopy.viewPage}
               </Link>
               <Link
                 href={`/productions/${production.slug}/edit`}
                 className="rounded-lg border border-background px-3 py-1.5 text-sm text-foreground hover:border-primary hover:text-primary"
               >
-                Editar
+                {myProductionsCopy.edit}
               </Link>
               <Link
                 href={`/productions/${production.slug}/opportunities/new`}
                 className="rounded-lg border border-background px-3 py-1.5 text-sm text-muted hover:text-primary"
               >
-                Nova chamada
+                {myProductionsCopy.newCall}
               </Link>
             </div>
           </li>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { auth as authCopy } from "@/lib/copy";
 
 export function LoginForm() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export function LoginForm() {
     setLoading(false);
 
     if (signInError) {
-      setError("E-mail ou senha incorretos. Tente novamente.");
+      setError(authCopy.login.invalid);
       return;
     }
 
@@ -39,10 +40,10 @@ export function LoginForm() {
       onSubmit={handleSubmit}
       className="mx-auto w-full max-w-md space-y-4 rounded-2xl border border-card bg-card p-8"
     >
-      <h1 className="text-2xl font-bold text-foreground">Entrar</h1>
-      <p className="text-sm text-muted">
-        Acesse sua conta para criar produções e se candidatar.
-      </p>
+      <h1 className="text-h2 text-2xl text-foreground">
+        {authCopy.login.title}
+      </h1>
+      <p className="text-sm text-muted">{authCopy.login.subtitle}</p>
 
       {error && (
         <p className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">
@@ -52,7 +53,7 @@ export function LoginForm() {
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="email">
-          E-mail
+          {authCopy.login.email}
         </label>
         <input
           id="email"
@@ -67,7 +68,7 @@ export function LoginForm() {
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="password">
-          Senha
+          {authCopy.login.password}
         </label>
         <input
           id="password"
@@ -85,13 +86,16 @@ export function LoginForm() {
         disabled={loading}
         className="w-full rounded-lg bg-primary py-2 font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
       >
-        {loading ? "Entrando..." : "Entrar"}
+        {loading ? authCopy.login.submitting : authCopy.login.submit}
       </button>
 
       <p className="text-center text-sm text-muted">
-        Não tem conta?{" "}
-        <Link href="/register" className="text-primary hover:text-primary-hover">
-          Criar conta
+        {authCopy.login.noAccount}{" "}
+        <Link
+          href="/register"
+          className="text-primary hover:text-primary-hover"
+        >
+          {authCopy.login.createAccount}
         </Link>
       </p>
     </form>

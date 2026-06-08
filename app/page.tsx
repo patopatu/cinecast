@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { home as homeCopy } from "@/lib/copy";
 import {
   ProductionExplorer,
   type HomeProduction,
@@ -58,37 +59,135 @@ export default async function HomePage() {
   });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <section className="mb-10 rounded-2xl border border-card bg-card p-8 text-center md:p-10">
-        <h1 className="text-3xl font-bold md:text-4xl">
-          Projetos audiovisuais,{" "}
-          <span className="text-primary">elenco</span> e equipe
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-muted">
-          Descubra produções, chamadas abertas e candidate-se em um só lugar.
-        </p>
-        {user && (
-          <Link
-            href="/productions/new"
-            className="mt-6 inline-block rounded-lg bg-primary px-6 py-3 font-medium text-white transition-colors hover:bg-primary-hover"
-          >
-            Nova produção
-          </Link>
-        )}
+    <>
+      {/* ===================== HERO ===================== */}
+      <section className="relative isolate overflow-hidden gradient-hero">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 gradient-vignette opacity-60"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        />
+
+        <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-12 sm:px-6 sm:pb-14 sm:pt-14 md:pb-16 md:pt-16 lg:px-8">
+          <div className="max-w-4xl">
+            <div className="mb-6 flex items-center gap-3">
+              <span className="status-dot bg-electric shadow-[0_0_12px_var(--color-electric)]" />
+              <span className="text-eyebrow">{homeCopy.hero.eyebrow}</span>
+            </div>
+
+            <h1 className="text-display text-4xl text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
+              {homeCopy.hero.headline}
+            </h1>
+
+            <p className="mt-5 max-w-2xl text-base text-muted sm:text-lg">
+              {homeCopy.hero.subheadline}
+            </p>
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              {user ? (
+                <Link href="/productions/new" className="btn-primary group">
+                  {homeCopy.hero.ctaPrimary}
+                  <span
+                    aria-hidden="true"
+                    className="inline-block transition-transform duration-200 group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
+                </Link>
+              ) : (
+                <Link href="/register" className="btn-primary group">
+                  {homeCopy.hero.ctaPrimary}
+                  <span
+                    aria-hidden="true"
+                    className="inline-block transition-transform duration-200 group-hover:translate-x-1"
+                  >
+                    →
+                  </span>
+                </Link>
+              )}
+              <Link href="/explore" className="btn-secondary">
+                {homeCopy.hero.ctaSecondary}
+              </Link>
+            </div>
+
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-2 border-t border-white/5 pt-6 text-sm text-muted">
+              <div className="flex items-baseline gap-2">
+                <span className="font-display text-xl text-foreground">
+                  {productions.length}
+                </span>
+                <span>produções publicadas</span>
+              </div>
+              <span
+                aria-hidden="true"
+                className="hidden h-1 w-1 rounded-full bg-white/20 sm:block"
+              />
+              <div className="flex items-baseline gap-2">
+                <span className="font-display text-xl text-foreground">
+                  {productions.reduce(
+                    (acc, p) => acc + (p.openCallsCount ?? 0),
+                    0
+                  )}
+                </span>
+                <span>chamadas abertas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-16 gradient-fade-top"
+        />
       </section>
 
-      <h2 className="mb-4 text-xl font-semibold text-foreground">
-        Produções em destaque
-      </h2>
+      {/* ===================== PRODUÇÕES EM DESTAQUE ===================== */}
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-14 lg:px-8">
+        <header className="mb-6 flex flex-wrap items-end justify-between gap-3 md:mb-8">
+          <div>
+            <span className="text-eyebrow-muted">Em cartaz</span>
+            <h2 className="text-h1 mt-2 text-2xl text-foreground sm:text-3xl">
+              {homeCopy.featured.title}
+            </h2>
+          </div>
+          <Link
+            href="/explore"
+            className="text-sm font-medium text-electric transition-colors hover:text-electric-soft"
+          >
+            Ver catálogo completo →
+          </Link>
+        </header>
 
-      {productions.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-card p-10 text-center text-muted">
-          Ainda não há produções publicadas.
-          {user ? " Crie a primeira com o botão acima." : ""}
-        </p>
-      ) : (
-        <ProductionExplorer productions={productions} />
-      )}
-    </div>
+        {productions.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-white/10 bg-card/40 px-6 py-16 text-center">
+            <h3 className="font-display text-2xl text-foreground">
+              {homeCopy.featured.empty.title}
+            </h3>
+            <p className="mx-auto mt-3 max-w-md text-muted">
+              {homeCopy.featured.empty.description}
+            </p>
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href={user ? "/productions/new" : "/register"}
+                className="btn-primary"
+              >
+                {homeCopy.featured.empty.ctaPublish}
+              </Link>
+              <Link href="/explore" className="btn-secondary">
+                {homeCopy.featured.empty.ctaExplore}
+              </Link>
+            </div>
+          </div>
+        ) : (
+          // Mostrar apenas 6 produções em destaque na home; o resto fica em /explore
+          <ProductionExplorer
+            productions={productions.slice(0, 6)}
+            variant="page"
+          />
+        )}
+      </section>
+    </>
   );
 }

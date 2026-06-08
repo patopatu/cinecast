@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { explorer as explorerCopy, productionPage } from "@/lib/copy";
 import { ProductionCard } from "./ProductionCard";
 import { ProductionModal } from "./ProductionModal";
 
@@ -36,27 +37,20 @@ const projectTypeLabels: Record<string, string> = {
   other: "Outro",
 };
 
-const statusLabels: Record<string, string> = {
-  development: "Em desenvolvimento",
-  pre_production: "Pré-produção",
-  production: "Em produção",
-  post_production: "Pós-produção",
-  released: "Lançado",
-};
-
-const opportunityTypeLabels: Record<string, string> = {
-  cast: "Elenco",
-  crew: "Equipe",
-  extra: "Extra",
-  internship: "Estágio",
-  volunteer: "Voluntário",
-};
+const statusLabels: Record<string, string> = productionPage.status;
+const opportunityTypeLabels: Record<string, string> =
+  productionPage.opportunityTypes;
 
 type ProductionExplorerProps = {
   productions: HomeProduction[];
+  /** Quando true (página dedicada), os filtros viram dropdowns compactos */
+  variant?: "inline" | "page";
 };
 
-export function ProductionExplorer({ productions }: ProductionExplorerProps) {
+export function ProductionExplorer({
+  productions,
+  variant = "inline",
+}: ProductionExplorerProps) {
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -86,97 +80,261 @@ export function ProductionExplorer({ productions }: ProductionExplorerProps) {
     });
   }, [productions, search, cityFilter, typeFilter, statusFilter]);
 
-  const inputClass =
-    "w-full rounded-lg border border-card bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-primary";
+  const hasFilters =
+    cityFilter !== "all" || typeFilter !== "all" || statusFilter !== "all";
 
+  function clearFilters() {
+    setCityFilter("all");
+    setTypeFilter("all");
+    setStatusFilter("all");
+    setSearch("");
+  }
+
+  if (variant === "page") {
+    return (
+      <>
+        {/* === BARRA DE BUSCA + FILTROS (DROPDOWNS COMPACTOS) === */}
+        <section className="mb-8">
+          <div className="grid gap-3 sm:grid-cols-[1fr_auto_auto_auto_auto] sm:items-center">
+            {/* Search */}
+            <div className="relative">
+              <svg
+                className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
+                width="16"
+                height="16"
+                viewBox="0 0 20 20"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M9 17a8 8 0 100-16 8 8 0 000 16zM17 17l-3.5-3.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={explorerCopy.searchPlaceholder}
+                className="w-full rounded-xl border border-white/10 bg-card py-2.5 pl-10 pr-4 text-sm text-foreground placeholder:text-muted outline-none transition-colors focus:border-electric"
+                aria-label="Buscar produções"
+              />
+            </div>
+
+            <FilterDropdown
+              label={explorerCopy.filters.type}
+              value={typeFilter}
+              onChange={setTypeFilter}
+              options={projectTypeLabels}
+              allLabel={explorerCopy.filters.allTypes}
+            />
+            <FilterDropdown
+              label={explorerCopy.filters.status}
+              value={statusFilter}
+              onChange={setStatusFilter}
+              options={statusLabels}
+              allLabel={explorerCopy.filters.allPhases}
+            />
+            <FilterDropdown
+              label={explorerCopy.filters.city}
+              value={cityFilter}
+              onChange={setCityFilter}
+              options={Object.fromEntries(cities.map((c) => [c, c]))}
+              allLabel={explorerCopy.filters.all}
+            />
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="text-xs font-medium text-electric transition-colors hover:text-electric-soft"
+              >
+                Limpar
+              </button>
+            )}
+          </div>
+
+          <div className="mt-5 flex items-center justify-between">
+            <p className="text-sm text-muted">
+              <span className="font-display text-lg text-foreground">
+                {filtered.length}
+              </span>{" "}
+              {filtered.length === 1
+                ? explorerCopy.results(1).singular
+                : explorerCopy.results(filtered.length).plural}
+            </p>
+          </div>
+        </section>
+
+        {/* === GRID === */}
+        {filtered.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-white/10 bg-card/40 px-6 py-16 text-center">
+            <p className="font-display text-2xl text-foreground">
+              {explorerCopy.empty.title}
+            </p>
+            <p className="mt-2 text-sm text-muted">
+              {explorerCopy.empty.description}
+            </p>
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="btn-secondary mt-5"
+              >
+                {explorerCopy.empty.cta}
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+            {filtered.map((production) => (
+              <ProductionCard
+                key={production.id}
+                title={production.title}
+                projectTypeLabel={
+                  projectTypeLabels[production.project_type] ??
+                  production.project_type
+                }
+                city={production.city}
+                statusLabel={
+                  statusLabels[production.status] ?? production.status
+                }
+                openCallsCount={production.openCallsCount}
+                onClick={() => setSelected(production)}
+                compact
+              />
+            ))}
+          </div>
+        )}
+
+        <ProductionModal
+          production={selected}
+          onClose={() => setSelected(null)}
+          projectTypeLabels={projectTypeLabels}
+          opportunityTypeLabels={opportunityTypeLabels}
+        />
+      </>
+    );
+  }
+
+  // variant === "inline" (home) — mantém os chips originais
   return (
     <>
-      <section className="mb-8 space-y-4 rounded-2xl border border-card bg-card p-4 md:p-6">
-        <div>
-          <label className="mb-1 block text-sm text-muted" htmlFor="search">
-            Buscar
-          </label>
+      <section className="mb-8 space-y-5">
+        {/* Search */}
+        <div className="relative">
+          <svg
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
+            width="18"
+            height="18"
+            viewBox="0 0 20 20"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M9 17a8 8 0 100-16 8 8 0 000 16zM17 17l-3.5-3.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
           <input
-            id="search"
             type="search"
-            placeholder="Nome, cidade, sinopse..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className={inputClass}
+            placeholder={explorerCopy.searchPlaceholder}
+            className="w-full rounded-2xl border border-white/10 bg-card py-3.5 pl-12 pr-4 text-sm text-foreground placeholder:text-muted outline-none transition-colors focus:border-electric"
+            aria-label="Buscar produções"
           />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <label className="mb-1 block text-sm text-muted" htmlFor="city">
-              Cidade
-            </label>
-            <select
-              id="city"
-              value={cityFilter}
-              onChange={(e) => setCityFilter(e.target.value)}
-              className={inputClass}
+        {/* Chips de filtro */}
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <span className="shrink-0 text-eyebrow-muted">
+              {explorerCopy.filters.type}
+            </span>
+            <Chip
+              active={typeFilter === "all"}
+              onClick={() => setTypeFilter("all")}
             >
-              <option value="all">Todas</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
-                </option>
-              ))}
-            </select>
+              {explorerCopy.filters.allTypes}
+            </Chip>
+            {Object.entries(projectTypeLabels).map(([value, label]) => (
+              <Chip
+                key={value}
+                active={typeFilter === value}
+                onClick={() => setTypeFilter(value)}
+              >
+                {label}
+              </Chip>
+            ))}
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm text-muted" htmlFor="type">
-              Tipo
-            </label>
-            <select
-              id="type"
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className={inputClass}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <span className="shrink-0 text-eyebrow-muted">
+              {explorerCopy.filters.status}
+            </span>
+            <Chip
+              active={statusFilter === "all"}
+              onClick={() => setStatusFilter("all")}
             >
-              <option value="all">Todos</option>
-              {Object.entries(projectTypeLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm text-muted" htmlFor="status">
-              Status
-            </label>
-            <select
-              id="status"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className={inputClass}
-            >
-              <option value="all">Todos</option>
-              {Object.entries(statusLabels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+              {explorerCopy.filters.allPhases}
+            </Chip>
+            {Object.entries(statusLabels).map(([value, label]) => (
+              <Chip
+                key={value}
+                active={statusFilter === value}
+                onClick={() => setStatusFilter(value)}
+              >
+                {label}
+              </Chip>
+            ))}
           </div>
         </div>
 
-        <p className="text-sm text-muted">
-          {filtered.length} produção{filtered.length !== 1 ? "ões" : ""}{" "}
-          encontrada{filtered.length !== 1 ? "s" : ""}
-        </p>
+        <div className="flex items-center justify-between border-t border-white/5 pt-3">
+          <p className="text-sm text-muted">
+            <span className="font-display text-base text-foreground">
+              {filtered.length}
+            </span>{" "}
+            {filtered.length === 1
+              ? explorerCopy.results(1).singular
+              : explorerCopy.results(filtered.length).plural}
+          </p>
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="text-xs font-medium text-electric transition-colors hover:text-electric-soft"
+            >
+              Limpar filtros
+            </button>
+          )}
+        </div>
       </section>
 
       {filtered.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-card p-10 text-center text-muted">
-          Nenhuma produção encontrada com esses filtros.
-        </p>
+        <div className="rounded-2xl border border-dashed border-white/10 bg-card/40 px-6 py-14 text-center">
+          <p className="font-display text-xl text-foreground">
+            {explorerCopy.empty.title}
+          </p>
+          <p className="mt-2 text-sm text-muted">
+            {explorerCopy.empty.description}
+          </p>
+          {hasFilters && (
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="btn-secondary mt-5"
+            >
+              {explorerCopy.empty.cta}
+            </button>
+          )}
+        </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((production) => (
             <ProductionCard
               key={production.id}
@@ -203,5 +361,80 @@ export function ProductionExplorer({ productions }: ProductionExplorerProps) {
         opportunityTypeLabels={opportunityTypeLabels}
       />
     </>
+  );
+}
+
+function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-200",
+        active
+          ? "bg-foreground text-deep-black"
+          : "border border-white/10 bg-card text-muted hover:border-white/20 hover:text-foreground",
+      ].join(" ")}
+      aria-pressed={active}
+    >
+      {children}
+    </button>
+  );
+}
+
+function FilterDropdown({
+  label,
+  value,
+  onChange,
+  options,
+  allLabel,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: Record<string, string>;
+  allLabel: string;
+}) {
+  const display = value === "all" ? allLabel : options[value] ?? value;
+  return (
+    <label className="relative">
+      <span className="sr-only">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="appearance-none rounded-xl border border-white/10 bg-card py-2.5 pl-4 pr-9 text-sm font-medium text-foreground outline-none transition-colors focus:border-electric"
+      >
+        <option value="all">{allLabel}</option>
+        {Object.entries(options).map(([v, l]) => (
+          <option key={v} value={v}>
+            {l}
+          </option>
+        ))}
+      </select>
+      <svg
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted"
+        width="12"
+        height="12"
+        viewBox="0 0 12 12"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M3 4.5L6 7.5L9 4.5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </label>
   );
 }

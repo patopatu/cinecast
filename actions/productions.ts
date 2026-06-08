@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { slugify } from "@/lib/utils";
+import { errors as errorsCopy } from "@/lib/copy";
 
 type ProjectType =
   | "film"
@@ -64,7 +65,7 @@ export async function createProduction(formData: FormData) {
   const fields = readProductionFields(formData);
 
   if (!fields.title) {
-    throw new Error("Título é obrigatório.");
+    throw new Error(errorsCopy.titleRequired);
   }
 
   const baseSlug = slugify(fields.title) || "producao";
@@ -103,7 +104,7 @@ export async function updateProduction(formData: FormData) {
   const fields = readProductionFields(formData);
 
   if (!id || !fields.title) {
-    throw new Error("Dados inválidos.");
+    throw new Error(errorsCopy.invalidData);
   }
 
   const { data: existing } = await supabase
@@ -113,7 +114,7 @@ export async function updateProduction(formData: FormData) {
     .single();
 
   if (!existing || existing.user_id !== user.id) {
-    throw new Error("Você não pode editar esta produção.");
+    throw new Error(errorsCopy.cannotEdit);
   }
 
   let slug = existing.slug;

@@ -1,3 +1,5 @@
+import { newProduction as newProductionCopy } from "@/lib/copy";
+
 type ProductionFormValues = {
   title: string;
   project_type: string;
@@ -69,7 +71,7 @@ export function ProductionForm({
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="title">
-          Título *
+          {newProductionCopy.form.title}
         </label>
         <input
           id="title"
@@ -82,8 +84,11 @@ export function ProductionForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1 block text-sm text-muted" htmlFor="project_type">
-            Tipo de projeto
+          <label
+            className="mb-1 block text-sm text-muted"
+            htmlFor="project_type"
+          >
+            {newProductionCopy.form.projectType}
           </label>
           <select
             id="project_type"
@@ -101,7 +106,7 @@ export function ProductionForm({
 
         <div>
           <label className="mb-1 block text-sm text-muted" htmlFor="status">
-            Status
+            {newProductionCopy.form.status}
           </label>
           <select
             id="status"
@@ -120,7 +125,7 @@ export function ProductionForm({
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="city">
-          Cidade
+          {newProductionCopy.form.city}
         </label>
         <input
           id="city"
@@ -132,7 +137,7 @@ export function ProductionForm({
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="synopsis">
-          Sinopse
+          {newProductionCopy.form.synopsis}
         </label>
         <textarea
           id="synopsis"
@@ -146,7 +151,7 @@ export function ProductionForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm text-muted" htmlFor="instagram">
-            Instagram
+            {newProductionCopy.form.instagram}
           </label>
           <input
             id="instagram"
@@ -159,7 +164,7 @@ export function ProductionForm({
 
         <div>
           <label className="mb-1 block text-sm text-muted" htmlFor="website">
-            Site
+            {newProductionCopy.form.website}
           </label>
           <input
             id="website"
@@ -174,7 +179,7 @@ export function ProductionForm({
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="cover_image">
-          URL da imagem de capa
+          {newProductionCopy.form.cover}
         </label>
         <input
           id="cover_image"
@@ -185,7 +190,7 @@ export function ProductionForm({
           className={inputClass}
         />
         <p className="mt-1 text-xs text-muted">
-          Por enquanto, cole um link de imagem. Upload no Supabase virá depois.
+          {newProductionCopy.form.coverHint}
         </p>
       </div>
 

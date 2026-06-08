@@ -1,0 +1,21 @@
+Você está trabalhando no projeto CineCast.
+
+Antes de alterar qualquer arquivo:
+
+1. Analise o código.
+2. Explique o plano.
+3. Aguarde aprovação.
+
+Nunca:
+
+- Apague funcionalidades existentes.
+- Remova tabelas do Supabase.
+- Faça mudanças destrutivas.
+
+Sempre:
+
+- Use TypeScript.
+- Use TailwindCSS.
+- Preserve responsividade.
+- Preserve acessibilidade.
+- Mantenha código limpo.

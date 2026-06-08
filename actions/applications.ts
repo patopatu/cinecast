@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeOne } from "@/lib/utils";
+import { errors as errorsCopy } from "@/lib/copy";
 
 export async function submitApplication(formData: FormData) {
   const supabase = await createClient();
@@ -18,7 +19,7 @@ export async function submitApplication(formData: FormData) {
   const portfolioUrl = String(formData.get("portfolio_url") ?? "").trim();
 
   if (!opportunityId || !message) {
-    throw new Error("Mensagem é obrigatória.");
+    throw new Error(errorsCopy.messageRequired);
   }
 
   const { data: opportunity } = await supabase
@@ -37,11 +38,11 @@ export async function submitApplication(formData: FormData) {
   const production = normalizeOne(opportunity?.productions);
 
   if (!opportunity || opportunity.status !== "open") {
-    throw new Error("Esta chamada não está aberta.");
+    throw new Error(errorsCopy.callClosed);
   }
 
   if (production?.user_id === user.id) {
-    throw new Error("Você não pode se candidatar à sua própria produção.");
+    throw new Error(errorsCopy.ownProduction);
   }
 
   const { data: existing } = await supabase
@@ -52,7 +53,7 @@ export async function submitApplication(formData: FormData) {
     .maybeSingle();
 
   if (existing) {
-    throw new Error("Você já se candidatou a esta vaga.");
+    throw new Error(errorsCopy.alreadyApplied);
   }
 
   const { error } = await supabase.from("applications").insert({
@@ -64,7 +65,7 @@ export async function submitApplication(formData: FormData) {
 
   if (error) {
     if (error.code === "23505") {
-      throw new Error("Você já se candidatou a esta vaga.");
+      throw new Error(errorsCopy.alreadyApplied);
     }
     throw new Error(error.message);
   }

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { submitApplication } from "@/actions/applications";
+import { applyForm as applyFormCopy } from "@/lib/copy";
 
 type ApplyFormProps = {
   opportunityId: string;
@@ -29,32 +30,37 @@ export function ApplyForm({
 
       <div>
         <p className="text-sm text-muted">{productionTitle}</p>
-        <h1 className="text-2xl font-bold text-foreground">{opportunityTitle}</h1>
+        <h1 className="text-h2 text-2xl text-foreground">
+          {opportunityTitle}
+        </h1>
       </div>
 
       <div>
         <label className="mb-1 block text-sm text-muted" htmlFor="message">
-          Mensagem *
+          {applyFormCopy.message.label}
         </label>
         <textarea
           id="message"
           name="message"
           required
           rows={5}
-          placeholder="Conte por que você é ideal para esta vaga..."
+          placeholder={applyFormCopy.message.placeholder}
           className={inputClass}
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm text-muted" htmlFor="portfolio_url">
-          Link do portfólio
+        <label
+          className="mb-1 block text-sm text-muted"
+          htmlFor="portfolio_url"
+        >
+          {applyFormCopy.portfolio}
         </label>
         <input
           id="portfolio_url"
           name="portfolio_url"
           type="url"
-          placeholder="https://"
+          placeholder={applyFormCopy.portfolioPlaceholder}
           className={inputClass}
         />
       </div>
@@ -63,14 +69,14 @@ export function ApplyForm({
         type="submit"
         className="w-full rounded-lg bg-primary py-2 font-medium text-white transition-colors hover:bg-primary-hover"
       >
-        Enviar candidatura
+        {applyFormCopy.submit}
       </button>
 
       <Link
         href={`/productions/${productionSlug}`}
         className="block text-center text-sm text-primary hover:text-primary-hover"
       >
-        ← Voltar para a produção
+        ← {applyFormCopy.back}
       </Link>
     </form>
   );

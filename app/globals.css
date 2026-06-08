@@ -1,16 +1,206 @@
 @import "tailwindcss";
 
+/* ============================================================
+   CINECAST — DESIGN SYSTEM
+   Tokens cinematográficos. Inspiração: Letterboxd, Linear,
+   Vimeo, Apple, Arc Browser.
+   ============================================================ */
+
 @theme {
-  --color-background: #111827;
-  --color-card: #1F2937;
-  --color-primary: #0084ff;
-  --color-primary-hover: #3ba3ff;
-  --color-foreground: #f9fafb;
-  --color-muted: #9ca3af;
+  /* ---- Paleta base (cores cinematográficas) ---- */
+  --color-deep-black: #050505;
+  --color-night-blue: #07111F;
+  --color-electric: #008CFF;
+  --color-electric-soft: #42A5FF;
+  --color-cream: #F6F2E8;
+  --color-gold: #D6A84B;
+
+  /* ---- Aliases semânticos (mantém compatibilidade com código existente) ---- */
+  --color-background: #050505;
+  --color-card: #0d1521;
+  --color-primary: #008CFF;
+  --color-primary-hover: #42A5FF;
+  --color-foreground: #F6F2E8;
+  --color-muted: #8a96a8;
+
+  /* ---- Novos tokens de superfície ---- */
+  --color-surface-2: #14202f;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-strong: rgba(255, 255, 255, 0.12);
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #D6A84B;
+
+  /* ---- Tipografia ---- */
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Anton: sans-serif condensada extra-bold, vibe de pôster de filme. Estilo "Black Writing" (Pian45). */
+  --font-display: var(--font-anton), "Arial Narrow", "Helvetica Neue Condensed", "Impact", sans-serif;
+
+  --text-display: 4.5rem;        /* 72px */
+  --text-display-md: 5.5rem;    /* 88px */
+  --text-display-lg: 6.5rem;    /* 104px */
+  --text-h1: 3rem;              /* 48px */
+  --text-h2: 1.875rem;          /* 30px */
+  --text-h3: 1.25rem;           /* 20px */
+  --text-body: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  /* ---- Sombras cinematográficas ---- */
+  --shadow-cinema-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-cinema-md: 0 8px 24px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-cinema-lg: 0 24px 60px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-cinema-glow: 0 0 0 1px rgba(0, 140, 255, 0.1), 0 20px 50px -10px rgba(0, 140, 255, 0.15);
 }
 
+/* ============================================================
+   BASE
+   ============================================================ */
+
 @layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* Focus visível consistente (acessibilidade) */
+  *:focus-visible {
+    outline: 2px solid var(--color-electric);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* Scrollbar discreta */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-deep-black);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-surface-2);
+    border-radius: 8px;
+    border: 2px solid var(--color-deep-black);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-strong);
+  }
+}
+
+/* ============================================================
+   CLASSES UTILITÁRIAS CINEMATOGRÁFICAS
+   ============================================================ */
+
+@layer components {
+  /* ---- Tipografia (Anton: sans condensada extra-bold) ---- */
+  /* Tracking positivo leve + line-height apertado = vibe de pôster de cinema */
+  .text-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.005em;
+    line-height: 0.95;
+    text-transform: none;
+  }
+  .text-h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.005em;
+    line-height: 1;
+  }
+  .text-h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 1.05;
+  }
+  .text-h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.015em;
+    line-height: 1.1;
+  }
+  .text-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--color-electric);
+  }
+  .text-eyebrow-muted {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--color-muted);
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-cream) 0%, var(--color-electric-soft) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* ---- Superfícies ---- */
+  .surface-card {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-cinema-sm);
+  }
+  .surface-card-elevated {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-cinema-md);
+  }
+
+  /* ---- Gradientes cinematográficos ---- */
+  .gradient-cinema {
+    background: linear-gradient(180deg, var(--color-deep-black) 0%, var(--color-night-blue) 100%);
+  }
+  .gradient-hero {
+    background:
+      radial-gradient(ellipse 80% 50% at 70% 0%, rgba(0, 140, 255, 0.12), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 10% 100%, rgba(214, 168, 75, 0.05), transparent 60%),
+      linear-gradient(180deg, var(--color-deep-black) 0%, var(--color-night-blue) 60%, var(--color-deep-black) 100%);
+  }
+  .gradient-vignette {
+    background: radial-gradient(ellipse at center, transparent 30%, var(--color-deep-black) 100%);
+  }
+  .gradient-fade-bottom {
+    background: linear-gradient(180deg, transparent 0%, var(--color-deep-black) 100%);
+  }
+  .gradient-fade-top {
+    background: linear-gradient(180deg, var(--color-deep-black) 0%, transparent 100%);
+  }
+
+  /* ---- Botões premium ---- */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-electric px-6 py-3 font-medium text-deep-black transition-all duration-200 hover:bg-electric-soft active:scale-[0.98];
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 font-medium text-foreground transition-all duration-200 hover:bg-white/5 hover:border-white/25 active:scale-[0.98];
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-muted transition-colors duration-200 hover:text-foreground;
+  }
+
+  /* ---- Status dot ---- */
+  .status-dot {
+    @apply inline-block h-1.5 w-1.5 rounded-full;
   }
 }

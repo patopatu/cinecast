@@ -3,12 +3,23 @@
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export function SignOutButton() {
+type SignOutButtonProps = {
+  onSignedOut?: () => void;
+  className?: string;
+  children?: React.ReactNode;
+};
+
+export function SignOutButton({
+  onSignedOut,
+  className,
+  children,
+}: SignOutButtonProps) {
   const router = useRouter();
 
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
+    onSignedOut?.();
     router.push("/");
     router.refresh();
   }
@@ -17,9 +28,12 @@ export function SignOutButton() {
     <button
       type="button"
       onClick={handleSignOut}
-      className="text-sm text-muted transition-colors hover:text-primary"
+      className={
+        className ??
+        "text-sm text-muted transition-colors hover:text-foreground"
+      }
     >
-      Sair
+      {children ?? "Sair"}
     </button>
   );
 }
