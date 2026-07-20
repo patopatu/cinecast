@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Cine Cast — uma plataforma construída por quem acredita no audiovisual.">
+  <title>Cine Cast — Entre em cena</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --color-bg-dark: #111020;
+      --color-black: #000000;
+      --color-purple: #A98CFF;
+      --color-lilac: #E7DAFF;
+      --color-white-lilac: #F4F0FF;
+      --color-white: #FFFFFF;
+      --color-success: #10B981;
+      --color-warning: #F59E0B;
+      --color-error: #EF4444;
+      --color-info: #3B82F6;
+    }
+
+    html, body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--color-bg-dark);
+      color: var(--color-white-lilac);
+      line-height: 1.6;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    h1 { font-size: 3rem; margin-bottom: 1rem; }
+    h2 { font-size: 2rem; margin-bottom: 0.8rem; }
+    h3 { font-size: 1.5rem; margin-bottom: 0.6rem; }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-purple);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(169, 140, 255, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-decoration: none;
+      color: var(--color-white-lilac);
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+
+    .brand img {
+      height: 40px;
+      width: auto;
+    }
+
+    .topbar nav {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .topbar nav a {
+      color: var(--color-white-lilac);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+    }
+
+    .topbar nav a:hover {
+      color: var(--color-purple);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .icon-button {
+      background: transparent;
+      border: none;
+      color: var(--color-white-lilac);
+      cursor: pointer;
+      font-size: 1.5rem;
+      padding: 0.5rem;
+      transition: all 0.3s;
+      border-radius: 0.5rem;
+    }
+
+    .icon-button:hover {
+      background: rgba(169, 140, 255, 0.1);
+      color: var(--color-purple);
+    }
+
+    .button {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .button.primary {
+      background: var(--color-purple);
+      color: var(--color-black);
+    }
+
+    .button.primary:hover {
+      background: #9d7ae6;
+    }
+
+    .button.secondary {
+      background: transparent;
+      color: var(--color-white-lilac);
+      border: 1px solid var(--color-purple);
+    }
+
+    .button.secondary:hover {
+      background: rgba(169, 140, 255, 0.1);
+    }
+
+    .publish-button {
+      background: var(--color-purple);
+      color: var(--color-black);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .profile-button {
+      background: rgba(169, 140, 255, 0.2);
+      color: var(--color-white-lilac);
+      border: 1px solid var(--color-purple);
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 600;
+    }
+
+    .profile-button span {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      background: var(--color-purple);
+      color: var(--color-black);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* Hero Section */
+    main {
+      min-height: calc(100vh - 70px);
+    }
+
+    .hero {
+      padding: 6rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      min-height: 90vh;
+    }
+
+    .hero-copy h1 {
+      font-size: 3.5rem;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      color: var(--color-white-lilac);
+    }
+
+    .hero-copy h1 em {
+      font-style: italic;
+      color: var(--color-purple);
+    }
+
+    .hero-intro {
+      font-size: 1.1rem;
+      color: rgba(244, 240, 255, 0.8);
+      margin-bottom: 2rem;
+      line-height: 1.8;
+      max-width: 500px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-status {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(169, 140, 255, 0.1);
+      font-size: 0.95rem;
+    }
+
+    .hero-status span {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hero-status span i {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--color-success);
+      border-radius: 50%;
+    }
+
+    .hero-status b {
+      font-weight: 700;
+      color: var(--color-white);
+      margin-left: 1rem;
+    }
+
+    /* Community Map */
+    .community-map {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      background: rgba(169, 140, 255, 0.05);
+      border-radius: 1rem;
+      border: 1px solid rgba(169, 140, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .community-map svg {
+      width: 100%;
+      height: 100%;
+      opacity: 0.3;
+    }
+
+    .map-node {
+      position: absolute;
+      background: rgba(169, 140, 255, 0.1);
+      border: 2px solid var(--color-purple);
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.85rem;
+      color: var(--color-white-lilac);
+      text-align: left;
+    }
+
+    .map-node:hover {
+      background: rgba(169, 140, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .map-node i {
+      font-size: 1.5rem;
+      margin-right: 0.5rem;
+    }
+
+    .map-node span b {
+      display: block;
+      color: var(--color-purple);
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .map-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .map-center .letter-c {
+      font-size: 4rem;
+      font-weight: 700;
+      color: var(--color-purple);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .map-center b {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--color-white-lilac);
+      margin-top: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .map-center small {
+      display: block;
+      font-size: 0.75rem;
+      color: rgba(244, 240, 255, 0.6);
+      margin-top: 0.25rem;
+    }
+
+    .scene-label {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: rgba(244, 240, 255, 0.6);
+    }
+
+    .scene-label span {
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .scene-label b {
+      font-weight: 700;
+      color: var(--color-purple);
+      font-size: 1.2rem;
+    }
+
+    /* Live Strip */
+    .live-strip {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid rgba(169, 140, 255, 0.1);
+      border-bottom: 1px solid rgba(169, 140, 255, 0.1);
+    }
+
+    .live-strip div {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      white-space: nowrap;
+      font-size: 0.95rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(169, 140, 255, 0.1);
+      border-radius: 0.5rem;
+      color: var(--color-white-lilac);
+    }
+
+    .live-strip i {
+      color: var(--color-purple);
+      font-size: 1.2rem;
+    }
+
+    /* Section */
+    .section {
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-heading {
+      margin-bottom: 3rem;
+    }
+
+    .section-heading > div {
+      margin-bottom: 1rem;
+    }
+
+    .section-heading p {
+      color: rgba(244, 240, 255, 0.8);
+      font-size: 1rem;
+      max-width: 600px;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--color-black);
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(169, 140, 255, 0.1);
+    }
+
+    footer .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    footer img {
+      height: 50px;
+      width: auto;
+      margin-bottom: 1rem;
+    }
+
+    footer p {
+      font-size: 0.95rem;
+      color: rgba(244, 240, 255, 0.8);
+    }
+
+    footer nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    footer nav a {
+      color: rgba(244, 240, 255, 0.8);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    footer nav a:hover {
+      color: var(--color-purple);
+    }
+
+    .export-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(169, 140, 255, 0.1);
+    }
+
+    .export-actions button {
+      background: rgba(169, 140, 255, 0.1);
+      color: var(--color-white-lilac);
+      border: 1px solid var(--color-purple);
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.3s;
+    }
+
+    .export-actions button:hover {
+      background: rgba(169, 140, 255, 0.2);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 3rem 1rem;
+      }
+
+      .hero-copy h1 {
+        font-size: 2rem;
+      }
+
+      .topbar nav {
+        display: none;
+      }
+
+      .community-map {
+        height: 300px;
+      }
+
+      .live-strip {
+        flex-wrap: wrap;
+      }
+
+      footer .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    main > * {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .skip {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--color-purple);
+      color: var(--color-black);
+      padding: 0.75rem 1.5rem;
+      text-decoration: none;
+      z-index: 100;
+    }
+
+    .skip:focus {
+      top: 0;
+    }
+
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-purple), var(--color-lilac));
+      z-index: 1000;
+      animation: slideRight 2s ease-out forwards;
+    }
+
+    @keyframes slideRight {
+      from { width: 0%; }
+      to { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<div class="reading-progress" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="#inicio" aria-label="Cine Cast — início">
+    <span>🎬</span>
+    <span>Cine Cast</span>
+  </a>
+  <nav aria-label="Navegação principal">
+    <a href="#descobrir">Descobrir</a>
+    <a href="#projetos">Projetos</a>
+    <a href="#talentos">Talentos</a>
+    <a href="#comunidade">Comunidade</a>
+  </nav>
+  <div class="header-actions">
+    <button class="icon-button" aria-label="Abrir busca"><i class="ph-bold ph-magnifying-glass"></i></button>
+    <button class="icon-button" aria-label="Abrir acessibilidade"><i class="ph-bold ph-person-arms-spread"></i></button>
+    <button class="icon-button" aria-label="Alternar tema"><i class="ph-bold ph-sun"></i></button>
+    <button class="publish-button"><i class="ph-bold ph-plus"></i> Publicar</button>
+    <button class="profile-button"><span>PB</span>Meu espaço</button>
+  </div>
+</header>
+
+<main id="conteudo">
+  <section class="hero" id="inicio">
+    <div class="hero-copy">
+      <p class="eyebrow">UMA PLATAFORMA FEITA POR QUEM FAZ AUDIOVISUAL</p>
+      <h1>Uma ideia encontra apoio.<br>Uma pessoa encontra espaço.<br><em>Uma produção começa.</em></h1>
+      <p class="hero-intro">O Cine Cast reúne oportunidades, projetos, talentos e conhecimentos em um ambiente construído pela própria comunidade. Aqui, cada pessoa pode encontrar uma chance — e também criar uma chance para outra pessoa.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#descobrir">Encontrar oportunidades <i class="ph-bold ph-arrow-down-right"></i></a>
+        <button class="button secondary">Compartilhar algo</button>
+      </div>
+      <div class="hero-status">
+        <span><i></i> Comunidade em construção</span>
+        <b>128</b> chamadas
+        <b>46</b> projetos
+        <b>312</b> contribuições
+      </div>
+    </div>
+    <div class="community-map" aria-label="Mapa de contribuições do Cine Cast">
+      <svg viewBox="0 0 620 560" aria-hidden="true">
+        <path d="M102 115 C190 32 298 146 374 101 S540 126 538 225" stroke="#A98CFF" stroke-width="2" fill="none"/>
+        <path d="M99 115 C30 275 115 378 218 418 S410 435 518 348" stroke="#A98CFF" stroke-width="2" fill="none"/>
+        <path d="M374 101 C318 235 430 248 518 348" stroke="#A98CFF" stroke-width="2" fill="none"/>
+        <path d="M218 418 C245 308 321 278 413 307" stroke="#A98CFF" stroke-width="2" fill="none"/>
+      </svg>
+      <div class="map-center"><span class="letter-c">C</span><div><b>CINE CAST</b><small>conexões em movimento</small></div></div>
+      <div class="scene-label"><span>CENA</span><b>00</b><i></i><small>ENTRE EM CENA</small></div>
+    </div>
+  </section>
+
+  <section class="live-strip" aria-label="Atividade da comunidade">
+    <div><i class="ph-bold ph-sparkle"></i><span>Uma chamada recebeu três candidaturas</span></div>
+    <div><i class="ph-bold ph-file-arrow-up"></i><span>Novo modelo de autorização compartilhado</span></div>
+    <div><i class="ph-bold ph-users-three"></i><span>Uma equipe encontrou direção de arte</span></div>
+    <div><i class="ph-bold ph-chat-circle-dots"></i><span>Uma pergunta recebeu nova contribuição</span></div>
+  </section>
+
+  <section class="section" id="descobrir">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">CENA 01 · DESCOBRIR</p>
+        <h2>O que está acontecendo agora?</h2>
+      </div>
+      <p>Um recorte vivo do que a comunidade publica, procura, desenvolve e compartilha. O conteúdo muda conforme novas pessoas entram em cena.</p>
+    </div>
+  </section>
+
+  <section class="section" id="projetos">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">CENA 02 · PROJETOS</p>
+        <h2>Produções como espaços abertos.</h2>
+      </div>
+      <p>Um projeto não termina na sinopse. Cada produção pode reunir equipe, chamadas, diário, referências, arquivos e formas de apoio.</p>
+    </div>
+  </section>
+
+  <section class="section" id="talentos">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">CENA 03 · TALENTOS</p>
+        <h2>Pessoas disponíveis para criar — e para ajudar.</h2>
+      </div>
+      <p>Talentos não aparecem como recursos em uma lista. Cada perfil mostra repertório, disponibilidade, interesses e formas de contribuir com a comunidade.</p>
+    </div>
+  </section>
+
+  <section class="section" id="comunidade">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">CENA 04 · COMUNIDADE</p>
+        <h2>Conhecimento que circula e volta para a comunidade.</h2>
+      </div>
+      <p>O Blog do Cine Cast é um espaço editorial colaborativo. Pessoas podem compartilhar experiências, publicar materiais, fazer perguntas e atualizar recursos.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div>
+      <span style="font-size: 2rem;">🎬</span>
+      <p>Uma plataforma construída por pessoas que acreditam no audiovisual.</p>
+    </div>
+    <nav>
+      <a href="#descobrir">Descobrir</a>
+      <a href="#projetos">Projetos</a>
+      <a href="#talentos">Talentos</a>
+      <a href="#comunidade">Comunidade</a>
+    </nav>
+    <div class="export-actions">
+      <button><i class="ph-bold ph-file-doc"></i> Word</button>
+      <button><i class="ph-bold ph-file-pdf"></i> PDF</button>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
