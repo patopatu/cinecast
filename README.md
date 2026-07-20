@@ -1,36 +1,152 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 Cine Cast — Entre em Cena
 
-## Getting Started
+Uma plataforma colaborativa que conecta pessoas, projetos e oportunidades do audiovisual.
 
-First, run the development server:
+## 📋 Sobre o Projeto
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+O Cine Cast é uma rede colaborativa do audiovisual que busca:
+
+- **Aproximar pessoas e projetos**: Conectar profissionais, talentos e produtoras
+- **Ampliar oportunidades**: Tornar chamadas, casting e projetos mais acessíveis
+- **Construir conhecimento coletivo**: Blog colaborativo, biblioteca de recursos e comunidade
+- **Acolher diversidade**: Desde iniciantes até profissionais consolidados
+- **Facilitar encontros**: Pessoas encontram oportunidades, projetos encontram equipes
+
+## 🎯 Valores Principais
+
+- ✨ **Criatividade** — O audiovisual nasce da criatividade
+- 🚀 **Liberdade** — Espaço para diferentes formas de produzir
+- 🔗 **Conexão** — Aproximar é o princípio central
+- 🤝 **Colaboração** — Audiovisual é feito em conjunto
+- 🌈 **Diversidade** — Múltiplas perspectivas e experiências
+- 🎬 **Audiovisual** — Integrado em toda a experiência
+
+## 🏗️ Stack Tecnológico
+
+### Frontend
+- **Framework**: React 18+ / Next.js 14+
+- **Styling**: Tailwind CSS + Custom CSS
+- **State Management**: Context API / Zustand
+- **UI Components**: Headless UI + Custom components
+- **Accessibility**: WCAG 2.1 AA compliant
+- **Icons**: Phosphor Icons
+- **Fonts**: Space Grotesk, DM Mono, Atkinson Hyperlegible, Inter
+
+### Backend
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js / Fastify
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Authentication**: JWT + OAuth 2.0
+- **File Storage**: AWS S3 / Local storage
+- **Real-time**: WebSockets / Socket.io
+
+### Infrastructure
+- **Hosting**: Vercel (Frontend) / Railway/Render (Backend)
+- **Database**: PostgreSQL (managed)
+- **CDN**: Cloudflare
+- **Email**: SendGrid / Resend
+- **Search**: Meilisearch / Elasticsearch
+
+## 📁 Estrutura do Projeto
+
+```
+cinecast/
+├── frontend/                 # Aplicação React/Next.js
+├── backend/                  # API Express/Fastify
+├── database/                 # Schemas e migrations
+├── docs/                     # Documentação
+├── design-system/            # Componentes e guia de estilo
+└── scripts/                  # Utilitários e automações
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Pré-requisitos
+- Node.js 18+
+- PostgreSQL 14+
+- Git
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Setup do Frontend
 
-## Learn More
+```bash
+cd frontend
+npm install
+cp .env.example .env.local
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Setup do Backend
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cd backend
+npm install
+cp .env.example .env
+npx prisma migrate dev
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📚 Documentação
 
-## Deploy on Vercel
+- [Brand Guidelines](./docs/BRAND_GUIDELINES.md) — Identidade visual e comunicação
+- [API Documentation](./docs/API.md) — Endpoints e especificações
+- [Database Schema](./docs/DATABASE.md) — Estrutura de dados
+- [Contributing](./CONTRIBUTING.md) — Como contribuir
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎨 Identidade Visual
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Paleta de Cores
+- **Azul-preto**: `#111020` (fundo principal)
+- **Preto**: `#000000` (estrutura)
+- **Roxo**: `#A98CFF` (destaque/ação)
+- **Lilás**: `#E7DAFF` (secundária)
+- **Branco lilás**: `#F4F0FF` (texto confortável)
+- **Branco**: `#FFFFFF` (contraste máximo)
+
+### Logo
+A logo representa a mão em forma de "C" segurando películas cinematográficas, simbolizando a construção coletiva do audiovisual.
+
+## 🔄 Ciclo de Participação
+
+1. **Descobrir** — Encontrar pessoas, projetos, conhecimentos e oportunidades
+2. **Participar** — Entrar em conversas, equipes, formações ou produções
+3. **Construir** — Criar projetos, experiências, documentos e repertórios
+4. **Compartilhar** — Devolver conhecimento e abrir caminhos
+5. **Ajudar** — Criar oportunidades para outras pessoas
+
+## 📦 Features Principais
+
+### MVP 1.0
+- ✅ Sistema de autenticação
+- ✅ Perfis de usuários (talentos/produtores)
+- ✅ Publicação de chamadas/casting
+- ✅ Discover feed com filtros
+- ✅ Gerenciamento de projetos
+- ✅ Sistema de salvos
+- ✅ Acessibilidade integrada
+
+### Futuro
+- 📅 Comunidade (blog colaborativo)
+- 📚 Biblioteca de recursos
+- 💬 Sistema de mensagens
+- 🔔 Notificações em tempo real
+- 📊 Análises e relatórios
+- 🎓 Formações e eventos
+
+## 🤝 Contribuindo
+
+Veja [CONTRIBUTING.md](./CONTRIBUTING.md) para detalhes sobre como contribuir com o projeto.
+
+## 📄 Licença
+
+Este projeto está sob licença [MIT](./LICENSE).
+
+## 📧 Contato
+
+- **Email**: contato@cinecast.com.br
+- **Website**: https://cinecast.com.br
+- **Instagram**: @cinecast_br
+
+---
+
+**ENTRE EM CENA** — Construído por quem acredita no audiovisual.
