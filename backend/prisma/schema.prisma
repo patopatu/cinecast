@@ -1,0 +1,659 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USERS & AUTHENTICATION
+// ============================================================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  fullName  String?
+  bio       String?
+  avatarUrl String?
+
+  // Roles and status
+  role      UserRole @default(USER)
+  isActive  Boolean  @default(true)
+  isEmailVerified Boolean @default(false)
+
+  // Location and contact
+  location     String?
+  portfolioUrl String?
+  socialLinks  Json? // { twitter, instagram, linkedin, etc }
+
+  // Preferences
+  preferences Json? // { theme, language, accessibility, etc }
+
+  // Stats
+  followersCount    Int @default(0)
+  followingCount    Int @default(0)
+  projectsCount     Int @default(0)
+  opportunitiesCount Int @default(0)
+
+  // Relations
+  profile              UserProfile?
+  createdProjects      Project[]        @relation("projectCreator")
+  projectTeamMembers   ProjectTeam[]    @relation("teamMember")
+  createdOpportunities Opportunity[]    @relation("opportunityCreator")
+  applications         Application[]    @relation("applicant")
+  reviewedApplications Application[]    @relation("reviewer")
+  createdContent       Content[]        @relation("contentAuthor")
+  contentComments      Comment[]        @relation("commentAuthor")
+  createdResources     Resource[]       @relation("resourceAuthor")
+  savedItems           SavedItem[]
+  followers            Follow[]         @relation("follower")
+  following            Follow[]         @relation("following")
+  notifications        Notification[]
+  projectUpdates       ProjectUpdate[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@index([email])
+  @@index([username])
+  @@index([role])
+  @@index([createdAt])
+}
+
+enum UserRole {
+  USER
+  PRODUCER
+  MODERATOR
+  ADMIN
+}
+
+model UserProfile {
+  id String @id @default(cuid())
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Professional info
+  expertiseAreas   String[] // ["fotografia", "som", "roteiro", ...]
+  experienceLevel  ExperienceLevel @default(BEGINNER)
+  availableFor     AvailableFor[] // [PROJECTS, COLLABORATION, MENTORING, ...]
+  hourlyRate       Decimal? @db.Decimal(10, 2)
+
+  // Stats
+  portfolioPieces Int @default(0)
+  contributionsCount Int @default(0)
+  profileCompletion Int @default(0) // 0-100
+
+  // Settings
+  headline String? // "Diretor de fotografia · Brasília"
+  isOpenToOpportunities Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([experienceLevel])
+}
+
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum AvailableFor {
+  PROJECTS
+  COLLABORATION
+  MENTORING
+  FREELANCE
+}
+
+// ============================================================================
+// PROJECTS
+// ============================================================================
+
+model Project {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  title       String
+  description String?
+  synopsis    String?
+
+  creatorId String
+  creator   User   @relation("projectCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // Project details
+  type     ProjectType
+  genre    String?
+  format   String?
+  status   ProjectStatus @default(IDEA)
+  
+  // Production info
+  targetAudience String?
+  estimatedDuration String? // "10 min", "90 min", etc
+  budgetRange String? // "sem orçamento", "até R$ 5k", etc
+  location String?
+
+  // Media
+  coverImageUrl String?
+  featuredImageUrl String?
+
+  // Collaboration
+  teamSizeTarget Int?
+  isOpenForCollaboration Boolean @default(true)
+  isOpenForOpportunities Boolean @default(true)
+  visibility ProjectVisibility @default(PUBLIC)
+
+  // Stats
+  viewsCount Int @default(0)
+  savedCount Int @default(0)
+
+  // Relations
+  opportunities Opportunity[]
+  teamMembers   ProjectTeam[]
+  content       Content[] @relation("projectContent")
+  updates       ProjectUpdate[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@index([creatorId])
+  @@index([status])
+  @@index([type])
+  @@index([visibility])
+  @@index([createdAt])
+}
+
+enum ProjectType {
+  SHORT_FILM
+  FEATURE
+  DOCUMENTARY
+  ANIMATION
+  SERIES
+  PODCAST
+  VIDEOCLIP
+  WEBINAR
+  EXPERIMENTAL
+  UNIVERSITY
+  OTHER
+}
+
+enum ProjectStatus {
+  IDEA
+  DEVELOPMENT
+  PREPRODUCTION
+  PRODUCTION
+  POSTPRODUCTION
+  FINISHED
+  ARCHIVED
+}
+
+enum ProjectVisibility {
+  PUBLIC
+  PRIVATE
+  RESTRICTED
+}
+
+model ProjectTeam {
+  id String @id @default(cuid())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  memberId String
+  member   User   @relation("teamMember", fields: [memberId], references: [id], onDelete: Cascade)
+
+  // Role details
+  role             String // "Diretor de Fotografia", "Som Direto", etc
+  department       String? // "Técnica", "Criativa", etc
+  responsibilities String?
+
+  status TeamMemberStatus @default(PENDING)
+  joinedAt DateTime @default(now())
+
+  @@unique([projectId, memberId])
+  @@index([projectId])
+  @@index([memberId])
+}
+
+enum TeamMemberStatus {
+  PENDING
+  ACCEPTED
+  ACTIVE
+  INACTIVE
+}
+
+model ProjectUpdate {
+  id String @id @default(cuid())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  title   String?
+  content String
+  type    UpdateType @default(GENERAL) // GENERAL, MILESTONE, CASTING, etc
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+enum UpdateType {
+  GENERAL
+  MILESTONE
+  CASTING
+  TEAM_UPDATE
+  SCHEDULE
+  MATERIAL
+  OTHER
+}
+
+// ============================================================================
+// OPPORTUNITIES
+// ============================================================================
+
+model Opportunity {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  title       String
+  description String
+  requirements String?
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  creatorId String
+  creator   User   @relation("opportunityCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // Opportunity details
+  type       OpportunityType
+  department String?
+  positionsNeeded Json? // { role1: count, role2: count }
+
+  // Location and format
+  location   String?
+  isRemote   Boolean @default(false)
+
+  // Compensation
+  isPaid     Boolean @default(false)
+  compensation String? // "Remunerado", "R$ 2k", etc
+
+  // Timeline
+  startDate DateTime?
+  endDate   DateTime?
+  deadline  DateTime
+
+  // Status
+  status OpportunityStatus @default(DRAFT)
+  visibility OpportunityVisibility @default(PUBLIC)
+
+  // Stats
+  applicationsCount Int @default(0)
+  viewsCount       Int @default(0)
+  savedCount       Int @default(0)
+
+  // Relations
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@index([creatorId])
+  @@index([projectId])
+  @@index([status])
+  @@index([type])
+  @@index([deadline])
+  @@index([createdAt])
+}
+
+enum OpportunityType {
+  CASTING
+  CREW
+  INTERNSHIP
+  COLLABORATION
+  MENTORSHIP
+  VOLUNTEER
+  OTHER
+}
+
+enum OpportunityStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  FILLED
+  ARCHIVED
+}
+
+enum OpportunityVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+// ============================================================================
+// APPLICATIONS
+// ============================================================================
+
+model Application {
+  id String @id @default(cuid())
+
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  applicantId String
+  applicant   User   @relation("applicant", fields: [applicantId], references: [id], onDelete: Cascade)
+
+  // Application content
+  coverLetter String?
+  portfolioLinks String[] // URLs
+
+  // Review
+  status       ApplicationStatus @default(SUBMITTED)
+  feedback     String?
+  reviewedAt   DateTime?
+  reviewedById String?
+  reviewedBy   User?   @relation("reviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  appliedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([opportunityId, applicantId])
+  @@index([opportunityId])
+  @@index([applicantId])
+  @@index([status])
+}
+
+enum ApplicationStatus {
+  SUBMITTED
+  REVIEWING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+// ============================================================================
+// CONTENT (Blog, Articles, Tips, Questions)
+// ============================================================================
+
+model Content {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  title       String
+  description String?
+  body        String
+
+  type ContentType
+
+  authorId String
+  author   User   @relation("contentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  projectId String?
+  project   Project? @relation("projectContent", fields: [projectId], references: [id], onDelete: SetNull)
+
+  // Tags and categorization
+  tags String[] // ["roteiro", "dica", "processo", ...]
+
+  // Media
+  coverImageUrl String?
+
+  // Status
+  status ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+
+  // Collaboration
+  isCollaborative Boolean @default(false)
+  collaborators  String[] // IDs
+
+  // Stats
+  viewsCount     Int @default(0)
+  likesCount     Int @default(0)
+  commentsCount  Int @default(0)
+  sharesCount    Int @default(0)
+  readingTimeMinutes Int?
+
+  // Relations
+  comments Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@index([authorId])
+  @@index([type])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([tags])
+}
+
+enum ContentType {
+  ARTICLE
+  TIP
+  EXPERIENCE
+  PROCESS
+  QUESTION
+  DISCUSSION
+  RESOURCE
+}
+
+enum ContentStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+model Comment {
+  id String @id @default(cuid())
+
+  contentId String
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation("commentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  parentCommentId String?
+  parentComment   Comment? @relation("replies", fields: [parentCommentId], references: [id], onDelete: Cascade)
+  replies         Comment[] @relation("replies")
+
+  body String
+
+  likesCount Int @default(0)
+  status     CommentStatus @default(PUBLISHED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([contentId])
+  @@index([authorId])
+  @@index([parentCommentId])
+}
+
+enum CommentStatus {
+  PUBLISHED
+  HIDDEN
+  DELETED
+}
+
+// ============================================================================
+// RESOURCES (Templates, Checklists, Guides)
+// ============================================================================
+
+model Resource {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  title       String
+  description String?
+
+  type     ResourceType
+  category String?
+
+  authorId String
+  author   User   @relation("resourceAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  // File
+  fileUrl  String?
+  fileType String? // pdf, docx, xlsx, etc
+  version  String @default("1.0")
+
+  // Details
+  isEditable Boolean @default(true)
+  usageInstructions String?
+  licenseType String? // MIT, CC-BY, etc
+
+  // Status
+  status ResourceStatus @default(DRAFT)
+  publishedAt DateTime?
+
+  // Stats
+  usesCount       Int @default(0)
+  adaptationsCount Int @default(0)
+
+  // Versions
+  parentResourceId String?
+  parentResource   Resource? @relation("versions", fields: [parentResourceId], references: [id], onDelete: Cascade)
+  versions         Resource[] @relation("versions")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  @@index([authorId])
+  @@index([type])
+  @@index([category])
+  @@index([status])
+}
+
+enum ResourceType {
+  TEMPLATE
+  CHECKLIST
+  GUIDE
+  TOOL
+  DOCUMENT
+}
+
+enum ResourceStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  UPDATE_NEEDED
+  ARCHIVED
+}
+
+// ============================================================================
+// SOCIAL FEATURES
+// ============================================================================
+
+model Follow {
+  id String @id @default(cuid())
+
+  followerId String
+  follower   User   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+
+  followingId String
+  following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model SavedItem {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  itemType SavedItemType
+  itemId   String // UUID of the item
+
+  savedAt DateTime @default(now())
+
+  @@unique([userId, itemType, itemId])
+  @@index([userId])
+  @@index([itemType])
+}
+
+enum SavedItemType {
+  PROJECT
+  OPPORTUNITY
+  CONTENT
+  RESOURCE
+  PERSON
+}
+
+// ============================================================================
+// NOTIFICATIONS
+// ============================================================================
+
+model Notification {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type    String // "application_received", "followed", "comment_reply", etc
+  title   String?
+  description String?
+
+  // Related items
+  relatedUserId String?
+  relatedItemId String?
+  relatedItemType String?
+
+  // Status
+  isRead  Boolean @default(false)
+  readAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// AUDIT & SYSTEM
+// ============================================================================
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  userId String?
+  action String
+  entityType String
+  entityId String
+  changes Json?
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType])
+  @@index([createdAt])
+}
